@@ -46,7 +46,7 @@ def plot_heatmap(correlation_matrix):
         cbar=True,  # Show color bar to indicate scale
         xticklabels=correlation_matrix.columns,
         yticklabels=correlation_matrix.columns,
-        square=True
+        
     )
     # Hide default x-axis labels and ticks
     ax.set_xticks([])
