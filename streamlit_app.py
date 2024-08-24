@@ -90,9 +90,9 @@ with tab1:
             st.write("Correlation Matrix (Based on Daily Returns):")
             st.write("
             **Understand the Heatmap**:
-            - **Green**: Strong positive correlation.
-            - **Yellow**: Neutral correlation.
-            - **Red**: Strong negative correlation."))
+            **Green**: Strong positive correlation.
+            **Yellow**: Neutral correlation.
+            **Red**: Strong negative correlation.")
                      
             plot_heatmap(correlation_matrix)
         else:
