@@ -88,11 +88,11 @@ with tab1:
             correlation_matrix, start_date, end_date = calculate_daily_returns(data)
             st.write(f"Data used from {start_date.date()} to {end_date.date()}")
             st.write("Correlation Matrix (Based on Daily Returns):")
-            st.write("
-            **Understand the Heatmap**:
-            **Green**: Strong positive correlation.
-            **Yellow**: Neutral correlation.
-            **Red**: Strong negative correlation.")
+            st.write(
+            "Green = Strong Positive Correlation
+            Yellow = Neutral/Correlation
+            Red = Strong Negative Correlation
+                     ")
                      
             plot_heatmap(correlation_matrix)
         else:
