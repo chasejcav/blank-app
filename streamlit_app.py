@@ -68,7 +68,7 @@ def plot_heatmap(correlation_matrix):
 st.title("Stock Analysis Dashboard")
 
 # Create tabs
-tab1, tab2 = st.tabs(["Correlation Matrix", "Instructions"])
+tab1, tab2 = st.tabs(["Instructions", "Correlation Matrix"])
 
 with tab2:
     st.header("Correlation Matrix")
@@ -91,11 +91,7 @@ with tab1:
     st.write("""
         1. **Input Stock Symbols**: Enter the stock symbols separated by commas (e.g., SPY, TLT, GLD) in the text box.
         2. **Generate Correlation Matrix**: Click the button to generate and view the correlation matrix based on daily returns.
-        3. **Understand the Heatmap**:
-            - **Green**: Strong positive correlation.
-            - **Yellow**: Neutral correlation.
-            - **Red**: Strong negative correlation.
-        4. **Data Range**: The displayed data range will show the start and end dates of the available data for the selected stocks.
+        3. **Data Range**: The displayed data range will show the start and end dates of the available data for the selected stocks.
     """)
 
 
