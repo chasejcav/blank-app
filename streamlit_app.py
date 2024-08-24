@@ -56,6 +56,7 @@ def plot_heatmap(correlation_matrix):
     ax_top = ax.twiny()
     ax_top.set_xlim(ax.get_xlim())  # Set the limits to match the original axis
     ax_top.set_xticks(range(len(correlation_matrix.columns)))
+    ax_top.set_xticklabels(correlation_matrix.columns, rotation=90, ha = 'center')
     
     
 
