@@ -48,19 +48,17 @@ def plot_heatmap(correlation_matrix):
         yticklabels=correlation_matrix.columns,
         
     )
-    # Hide default x-axis labels and ticks
-    ax.set_xticks([])
-    ax.set_xticklabels([])
-
-    # Add x-axis labels to the top
+    # Create a new axis at the top
     ax_top = ax.twiny()
-    ax_top.set_xlim(ax.get_xlim())  # Set the limits to match the original axis
-    ax_top.set_xticks(range(len(correlation_matrix.columns)))
-    ax_top.set_xticklabels(correlation_matrix.columns, rotation=90, ha = 'center')
+    ax_top.set_xlim(ax.get_xlim())  # Match x-axis limits with the original axis
     
-    # Hide default x-axis labels and ticks
-    ax.set_xticks([])
-    ax.set_xticklabels([])
+    # Set the ticks to be in the center of each cell
+    ax_top.set_xticks([x + 0.5 for x in range(len(correlation_matrix.columns))])
+    ax_top.set_xticklabels(correlation_matrix.columns, rotation=90, ha='center')
+
+    # Set label and tick positions
+    ax_top.xaxis.set_label_position('top')
+    ax_top.xaxis.set_ticks_position('top')
 
     # Adjust layout for better fitting
     plt.subplots_adjust(top=0.85, bottom=0.15, right=0.85, left=0.15)  # Adjust margins
