@@ -7,15 +7,19 @@ from matplotlib.colors import LinearSegmentedColormap
 
 # Function to fetch adjusted stock prices
 def fetch_data(symbols):
-    data = {}
-    for symbol in symbols:
-        stock = yf.Ticker(symbol)
-        df = stock.history(period="max")
-        if 'Adj Close' in df.columns:
-            data[symbol] = df['Adj Close']
-        else:
-            data[symbol] = df['Close']
-    return pd.DataFrame(data)
+    try:
+        data = {}
+        for symbol in symbols:
+            stock = yf.Ticker(symbol)
+            df = stock.history(period="max")
+            if 'Adj Close' in df.columns:
+                data[symbol] = df['Adj Close']
+            else:
+                data[symbol] = df['Close']
+        return pd.DataFrame(data)
+    except AttributeError:
+        st.error("Try again.")
+        return pd.DataFrame()
 
 # Function to calculate daily returns, correlations, and get start/end dates
 def calculate_daily_returns(data):
