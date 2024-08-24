@@ -54,7 +54,7 @@ def plot_heatmap(correlation_matrix):
     
     # Set the ticks to be in the center of each cell
     ax_top.set_xticks([x + 0.5 for x in range(len(correlation_matrix.columns))])
-    ax_top.set_xticklabels(correlation_matrix.columns, rotation=90, ha='center')
+    ax_top.set_xticklabels(correlation_matrix.columns, rotation=0, ha='center')
 
     # Set label and tick positions
     ax_top.xaxis.set_label_position('top')
