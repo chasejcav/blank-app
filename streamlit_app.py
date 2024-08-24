@@ -102,7 +102,11 @@ with tab3:
 
     if symbols:
         weights_input = st.text_input("Enter Weights (comma-separated, e.g., 0.4, 0.4, 0.2)", value="")
-        weights = [float(w) for w in weights_input.split(',')]
+        try:
+            weights = [float(w) for w in weights_input.split(',') if w.strip()]
+        except ValueError:
+            st.error("Invalid weight values. Please ensure all weights are numeric and properly formatted.")
+            weights = []
 
         if len(symbols) == len(weights):
             data = fetch_data(symbols)
