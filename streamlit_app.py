@@ -58,10 +58,12 @@ def plot_heatmap(correlation_matrix):
     ax_top.set_xticks(range(len(correlation_matrix.columns)))
     ax_top.set_xticklabels(correlation_matrix.columns, rotation=90, ha = 'center')
     
-    
+    # Hide default x-axis labels and ticks
+    ax.set_xticks([])
+    ax.set_xticklabels([])
 
-    # Adjust layout to fit the plot
-    plt.tight_layout()
+    # Adjust layout for better fitting
+    plt.subplots_adjust(top=0.85, bottom=0.15, right=0.85, left=0.15)  # Adjust margins
 
     st.pyplot(plt.gcf())
 
