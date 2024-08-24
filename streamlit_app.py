@@ -27,7 +27,11 @@ def calculate_daily_returns(data):
 
 # Function to plot heatmap with custom color scheme
 def plot_heatmap(correlation_matrix):
-    plt.figure(figsize=(10, 6))
+    num_symbols = len(correlation_matrix.columns)
+    
+    # Define dynamic figure size based on the number of symbols
+    fig_size = (max(num_symbols, 5) * 2, max(num_symbols, 5) * 1.5)  # Width and height in inches
+    plt.figure(figsize=fig_size)
     
     # Create a custom color map from red (negative), yellow (neutral), to green (positive)
     cmap = LinearSegmentedColormap.from_list(
