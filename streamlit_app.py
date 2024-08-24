@@ -110,7 +110,7 @@ with tab3:
 
         if len(symbols) == len(weights):
             data = fetch_data(symbols)
-           if not data.empty:
+            if not data.empty:
                 daily_returns, _ = calculate_daily_returns(data)
                 annual_return, annual_std_dev = calculate_portfolio_metrics(daily_returns, weights)
                 st.write(f"Annual Average Return: {annual_return:.2%}")
