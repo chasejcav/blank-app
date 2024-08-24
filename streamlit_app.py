@@ -70,7 +70,7 @@ st.title("Stock Analysis Dashboard")
 # Create tabs
 tab1, tab2 = st.tabs(["Correlation Matrix", "Instructions"])
 
-with tab1:
+with tab2:
     st.header("Correlation Matrix")
     st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
     symbols_input = st.text_input("Stock Symbols", value="")
@@ -86,10 +86,10 @@ with tab1:
         else:
             st.error("No data found for the given symbols. Please check your input.")
 
-with tab2:
+with tab1:
     st.header("Instructions")
     st.write("""
-        1. **Input Stock Symbols**: Enter the stock symbols separated by commas (e.g., AAPL, MSFT, GOOGL) in the text box.
+        1. **Input Stock Symbols**: Enter the stock symbols separated by commas (e.g., SPY, TLT, GLD) in the text box.
         2. **Generate Correlation Matrix**: Click the button to generate and view the correlation matrix based on daily returns.
         3. **Understand the Heatmap**:
             - **Green**: Strong positive correlation.
