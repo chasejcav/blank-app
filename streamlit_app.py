@@ -27,7 +27,7 @@ def calculate_daily_returns(data):
 
 # Function to plot heatmap with custom color scheme
 def plot_heatmap(correlation_matrix):
-   num_symbols = len(correlation_matrix.columns)
+    num_symbols = len(correlation_matrix.columns)
     
     # Define dynamic figure size based on the number of symbols
     fig_width = max(num_symbols, 5) * 1.5
