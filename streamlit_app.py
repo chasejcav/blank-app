@@ -64,26 +64,38 @@ def plot_heatmap(correlation_matrix):
 
     st.pyplot(plt.gcf())
 
-# Streamlit app
-st.title("Stock Correlation Matrix")
+# Streamlit app with tabs
+st.title("Stock Analysis Dashboard")
 
-st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
-symbols_input = st.text_input("Stock Symbols", value="")
-symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
+# Create tabs
+tab1, tab2 = st.tabs(["Correlation Matrix", "Instructions"])
 
-if st.button("Generate Correlation Matrix"):
-    data = fetch_data(symbols)
-    if not data.empty:
-        # Calculate daily returns and correlation matrix
-        correlation_matrix, start_date, end_date = calculate_daily_returns(data)
+with tab1:
+    st.header("Correlation Matrix")
+    st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
+    symbols_input = st.text_input("Stock Symbols", value="")
+    symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
 
-        # Display the start and end date
-        st.write(f"Data used from {start_date.date()} to {end_date.date()}")
+    if st.button("Generate Correlation Matrix"):
+        data = fetch_data(symbols)
+        if not data.empty:
+            correlation_matrix, start_date, end_date = calculate_daily_returns(data)
+            st.write(f"Data used from {start_date.date()} to {end_date.date()}")
+            st.write("Correlation Matrix Heatmap (Based on Daily Returns):")
+            plot_heatmap(correlation_matrix)
+        else:
+            st.error("No data found for the given symbols. Please check your input.")
 
-        # Display the heatmap
-        st.write("Correlation Matrix Heatmap (Based on Daily Returns):")
-        plot_heatmap(correlation_matrix)
-    else:
-        st.write("Failed to fetch data for the symbols provided.")
+with tab2:
+    st.header("Instructions")
+    st.write("""
+        1. **Input Stock Symbols**: Enter the stock symbols separated by commas (e.g., AAPL, MSFT, GOOGL) in the text box.
+        2. **Generate Correlation Matrix**: Click the button to generate and view the correlation matrix based on daily returns.
+        3. **Understand the Heatmap**:
+            - **Green**: Strong positive correlation.
+            - **Yellow**: Neutral correlation.
+            - **Red**: Strong negative correlation.
+        4. **Data Range**: The displayed data range will show the start and end dates of the available data for the selected stocks.
+    """)
 
 
