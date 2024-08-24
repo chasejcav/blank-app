@@ -45,15 +45,22 @@ def plot_heatmap(correlation_matrix):
         linewidths=.5,
         cbar=True,  # Show color bar to indicate scale
         xticklabels=correlation_matrix.columns,
-        yticklabels=correlation_matrix.columns
+        yticklabels=correlation_matrix.columns,
+        square=True
     )
-    # Move y-axis labels to the top
-    ax.yaxis.set_label_position("top")
-    ax.yaxis.tick_top()
+    # Hide the y-axis labels and ticks on the left
+    ax.set_yticks([])
+    ax.set_yticklabels([])
 
-    # Adjust the plot to ensure the labels are visible
-    plt.gca().invert_yaxis()  # Optional: Invert y-axis if needed for better label positioning
-    plt.tight_layout()  # Adjust layout to fit labels and titles
+    # Add y-axis labels at the top
+    ax_top = ax.twiny()
+    ax_top.set_xticks(range(len(correlation_matrix.columns)))
+    ax_top.set_xticklabels(correlation_matrix.columns, rotation=90)
+    ax_top.set_xlabel('Stock Symbols')
+
+    # Adjust layout to fit the plot
+    plt.tight_layout()
+    
     st.pyplot(plt.gcf())
 
 # Streamlit app
