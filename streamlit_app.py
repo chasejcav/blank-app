@@ -48,19 +48,20 @@ def plot_heatmap(correlation_matrix):
         yticklabels=correlation_matrix.columns,
         square=True
     )
-    # Hide the y-axis labels and ticks on the left
-    ax.set_yticks([])
-    ax.set_yticklabels([])
+    # Hide default x-axis labels and ticks
+    ax.set_xticks([])
+    ax.set_xticklabels([])
 
-    # Add y-axis labels at the top
+    # Add x-axis labels to the top
     ax_top = ax.twiny()
+    ax_top.set_xlim(ax.get_xlim())  # Set the limits to match the original axis
     ax_top.set_xticks(range(len(correlation_matrix.columns)))
     ax_top.set_xticklabels(correlation_matrix.columns, rotation=90)
     ax_top.set_xlabel('Stock Symbols')
 
     # Adjust layout to fit the plot
     plt.tight_layout()
-    
+
     st.pyplot(plt.gcf())
 
 # Streamlit app
