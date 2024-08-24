@@ -49,6 +49,7 @@ def plot_heatmap(correlation_matrix):
         
     )
     # Create a new axis at the top
+    ax.xaxis.set_visible(False)
     ax_top = ax.twiny()
     ax_top.set_xlim(ax.get_xlim())  # Match x-axis limits with the original axis
     
