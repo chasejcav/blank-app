@@ -68,7 +68,15 @@ def plot_heatmap(correlation_matrix):
 st.title("Stock Analysis Dashboard")
 
 # Create tabs
-tab1, tab2, tab3 = st.tabs(["Instructions", "Correlation Matrix", "Portfolio Return & Volatility"])
+tab1, tab2 = st.tabs(["Instructions", "Correlation Matrix"])
+
+with tab1:
+    st.header("Instructions")
+    st.write("""
+        1. **Input Stock Symbols**: Enter the stock symbols separated by commas (e.g., SPY, TLT, GLD) in the text box.
+        2. **Generate Correlation Matrix**: Click the button to generate and view the correlation matrix based on daily returns.
+        3. **Data Range**: The displayed data range will show the start and end dates of the available data for the selected stocks.
+    """)
 
 with tab2:
     st.header("Correlation Matrix")
@@ -86,36 +94,4 @@ with tab2:
         else:
             st.error("No data found for the given symbols. Please check your input.")
 
-with tab1:
-    st.header("Instructions")
-    st.write("""
-        1. **Input Stock Symbols**: Enter the stock symbols separated by commas (e.g., SPY, TLT, GLD) in the text box.
-        2. **Generate Correlation Matrix**: Click the button to generate and view the correlation matrix based on daily returns.
-        3. **Data Range**: The displayed data range will show the start and end dates of the available data for the selected stocks.
-    """)
 
-with tab3:
-    st.header("Portfolio Metrics")
-    st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
-    symbols_input = st.text_input("Stock Symbols (for Portfolio Metrics)", value="")
-    symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
-
-    if symbols:
-        weights_input = st.text_input("Enter Weights (comma-separated, e.g., 0.4, 0.4, 0.2)", value="")
-        try:
-            weights = [float(w) for w in weights_input.split(',') if w.strip()]
-        except ValueError:
-            st.error("Invalid weight values. Please ensure all weights are numeric and properly formatted.")
-            weights = []
-
-        if len(symbols) == len(weights):
-            data = fetch_data(symbols)
-            if not data.empty:
-                daily_returns, _ = calculate_daily_returns(data)
-                annual_return, annual_std_dev = calculate_portfolio_metrics(daily_returns, weights)
-                st.write(f"Annual Average Return: {annual_return:.2%}")
-                st.write(f"Annual Standard Deviation: {annual_std_dev:.2%}")
-            else:
-                st.error("No data found for the given symbols. Please check your input.")
-        else:
-            st.error("The number of weights must match the number of stock symbols.")
