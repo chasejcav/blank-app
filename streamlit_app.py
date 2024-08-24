@@ -47,7 +47,13 @@ def plot_heatmap(correlation_matrix):
         xticklabels=correlation_matrix.columns,
         yticklabels=correlation_matrix.columns
     )
-    
+    # Move y-axis labels to the top
+    ax.yaxis.set_label_position("top")
+    ax.yaxis.tick_top()
+
+    # Adjust the plot to ensure the labels are visible
+    plt.gca().invert_yaxis()  # Optional: Invert y-axis if needed for better label positioning
+    plt.tight_layout()  # Adjust layout to fit labels and titles
     st.pyplot(plt.gcf())
 
 # Streamlit app
