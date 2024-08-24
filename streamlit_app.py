@@ -92,8 +92,9 @@ with tab1:
             plot_heatmap(correlation_matrix)
         else:
             st.error("No data found for the given symbols. Please check your input.")
-        except AttributeError:
-        st.error("Try again.")
+
+    if AttributeError:
+        st.error("Try again")
 
 with tab2:
     st.header("Return & Volatility")
