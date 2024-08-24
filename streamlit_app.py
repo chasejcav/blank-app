@@ -71,7 +71,7 @@ def plot_heatmap(correlation_matrix):
     st.pyplot(plt.gcf())
 
 # Streamlit app with tabs
-st.title("Stock Analysis Dashboard")
+st.title("Dashboard")
 
 # Create tabs
 tab1, tab2 = st.tabs(["Correlation Matrix", "Return & Volatility"])
@@ -87,7 +87,13 @@ with tab1:
         if not data.empty:
             correlation_matrix, start_date, end_date = calculate_daily_returns(data)
             st.write(f"Data used from {start_date.date()} to {end_date.date()}")
-            st.write("Correlation Matrix Heatmap (Based on Daily Returns):")
+            st.write("Correlation Matrix (Based on Daily Returns):")
+            st.write("
+            **Understand the Heatmap**:
+            - **Green**: Strong positive correlation.
+            - **Yellow**: Neutral correlation.
+            - **Red**: Strong negative correlation."))
+                     
             plot_heatmap(correlation_matrix)
         else:
             st.error("No data found for the given symbols. Please check your input.")
