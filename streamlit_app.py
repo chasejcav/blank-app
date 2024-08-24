@@ -35,7 +35,7 @@ def plot_heatmap(correlation_matrix):
     cmap = LinearSegmentedColormap.from_list(
         'custom_cmap', ['red', 'yellow', 'green'], N=256)
 
-    sns.heatmap(
+    ax = sns.heatmap(
         correlation_matrix, 
         annot=True, 
         cmap=cmap, 
