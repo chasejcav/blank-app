@@ -4,6 +4,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
+import numpy as np
 
 # Function to fetch adjusted stock prices
 def fetch_data(symbols):
