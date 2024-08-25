@@ -75,15 +75,6 @@ def plot_heatmap(correlation_matrix):
 
     st.pyplot(plt.gcf())
 
-# Function to calculate average annual returns
-def calculate_average_annual_returns(data):
-    avg_annual_returns = daily_returns.mean() * 252 * 100
-    start_date = data.index.min().strftime('%Y-%m-%d')
-    end_date = data.index.max().strftime('%Y-%m-%d')
-    return avg_annual_returns.round(2), start_date, end_date
-
-
-
 # Streamlit app with tabs
 st.title("Dashboard")
 
@@ -108,19 +99,7 @@ with tab1:
             st.error("No data found for the given symbols. Please check your input.")
 
 with tab2:
-    st.header("Average Annual Returns")
-    st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
-    symbols_input = st.text_input("Stock Symbols for Returns", value="")
-    symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
-
-    if st.button("Calculate Average Annual Returns"):
-        data = fetch_data(symbols)
-        if not data.empty():
-            avg_annual_returns, start_date, end_date = calculate_average_annual_returns_and_date_range(data)
-            st.write(f"**Data used from {start_date} to {end_date}**")
-            st.write("**Average Annual Returns (in %):**")
-            st.write(avg_annual_returns)
-        else:
-            st.error("No data found for the given symbols. Please check your input.")
+    st.header("Return & Volatility")
+    st.write("coming soon")
     
    
