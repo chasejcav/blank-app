@@ -29,11 +29,17 @@ def calculate_daily_returns(data):
     correlation_matrix = daily_returns.corr()
     return correlation_matrix, start_date, end_date
 
-# Function to calculate average annual returns and get date range
-def calculate_average_annual_returns(data):
-    daily_returns = data.pct_change().dropna()
-    avg_annual_returns = daily_returns.mean() * 252 * 100  # 252 trading days in a year
-    return avg_annual_returns.round(2)
+# Function to calculate average annual return and standard deviation
+def calculate_metrics(data):
+    annual_returns = {}
+    annual_std_devs = {}
+    for symbol in data.columns:
+        daily_returns = data[symbol].pct_change().dropna()
+        annual_return = daily_returns.mean() * 252 * 100  # Annualized return
+        annual_std_dev = daily_returns.std() * (252 ** 0.5) * 100  # Annualized std dev
+        annual_returns[symbol] = round(annual_return, 2)
+        annual_std_devs[symbol] = round(annual_std_dev, 2)
+    return annual_returns, annual_std_devs
 
 
 # Function to plot heatmap with custom color scheme
@@ -105,17 +111,27 @@ with tab1:
             st.error("No data found for the given symbols. Please check your input.")
 
 with tab2:
-    st.header("Average Annual Returns")
+    st.header("Annual Return & Volatility")
     st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
-    symbols_input = st.text_input("Stock Symbols for Returns", value="")
+    symbols_input = st.text_input("Stock Symbols", value="")
     symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
 
-    if st.button("Calculate Average Annual Returns"):
+    if st.button("Calculate Metrics"):
         data = fetch_data(symbols)
         if not data.empty:
-            avg_annual_returns = calculate_average_annual_returns(data)
-            st.write("**Average Annual Returns (in %):**")
-            st.write(avg_annual_returns)
+            start_date = data.index.min().strftime('%Y-%m-%d')
+            end_date = data.index.max().strftime('%Y-%m-%d')
+            annual_returns, annual_std_devs = calculate_metrics(data)
+            
+            st.write(f"**Data used from {start_date} to {end_date}**")
+            st.write("**Annual Return & Standard Deviation:**")
+
+            # Display the results
+            metrics_df = pd.DataFrame({
+                'Annual Return (%)': annual_returns,
+                'Annual Standard Deviation (%)': annual_std_devs
+            })
+            st.dataframe(metrics_df)
         else:
             st.error("No data found for the given symbols. Please check your input.")
   
