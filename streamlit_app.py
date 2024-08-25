@@ -7,6 +7,7 @@ from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import plotly.graph_objects as go
 import requests
+from datetime import timedelta
 
 
 # Function to fetch adjusted stock prices
