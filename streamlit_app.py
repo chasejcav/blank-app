@@ -175,9 +175,7 @@ with tab2:
             st.dataframe(metrics_df)
         else:
             st.error("No data found for the given symbols. Please check your input.")
-
-    
-# Streamlit app
+   
 with tab3:
     st.header("Returns Data")
     st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
