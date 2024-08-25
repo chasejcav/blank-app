@@ -93,7 +93,7 @@ def plot_heatmap(correlation_matrix):
 st.title("Dashboard")
 
 # Create tabs
-tab1, tab2, tab3 = st.tabs(["Correlation Matrix", "Return & Volatility", "Yield Curve"])
+tab1, tab2 = st.tabs(["Correlation Matrix", "Return & Volatility"])
 
 with tab1:
     st.header("Correlation Matrix")
