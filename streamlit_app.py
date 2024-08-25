@@ -101,7 +101,7 @@ with tab1:
     symbols_input = st.text_input("Stock Symbols", value="")
     symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
 
-    if st.button("Generate Correlation Matrix"):
+    if st.button("Generate"):
         data = fetch_data(symbols)
         if not data.empty:
             correlation_matrix, start_date, end_date = calculate_daily_returns(data)
