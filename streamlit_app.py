@@ -106,17 +106,18 @@ with tab2:
         symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
         weights = list(map(float, weights_input.split(',')))
 
-        if len(weights) != len(symbols):
-            st.error("Error: The number of weights does not match the number of tickers.")
-        else:
-            data = fetch_data(symbols)
-            if not data.empty:
-                _, daily_returns, start_date, end_date = calculate_daily_returns(data)
-                annual_return, annual_std_dev = calculate_portfolio_metrics(daily_returns, weights)
+if len(weights) != len(symbols):
+    st.error("Error: The number of weights does not match the number of tickers.")
+else:
+    data = fetch_data(symbols)
+    if not data.empty:
+        correlation_matrix, daily_returns, start_date, end_date = calculate_daily_returns(data)
+        annual_return, annual_std_dev = calculate_portfolio_metrics(daily_returns, weights)
 
-                # Display results
-                st.write(f"**Data used from {start_date.date()} to {end_date.date()}**")
-                st.write(f"**Annual Return (%):** {annual_return}")
-                st.write(f"**Annual Standard Deviation (%):** {annual_std_dev}")
-            else:
-                st.error("No data found for the given symbols. Please check your input.")
+        # Display results
+        st.write(f"**Data used from {start_date.date()} to {end_date.date()}**")
+        st.write(f"**Annual Return (%):** {annual_return}")
+        st.write(f"**Annual Standard Deviation (%):** {annual_std_dev}")
+    else:
+        st.error("No data found for the given symbols. Please check your input.")
+
