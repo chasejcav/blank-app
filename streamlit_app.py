@@ -88,48 +88,6 @@ def plot_heatmap(correlation_matrix):
 
     st.pyplot(plt.gcf())
 
-# Function to calculate percentage returns over various time periods
-def calculate_returns(data):
-    time_periods = {
-        "1 Day": 1,
-        "3 Days": 3,
-        "1 Week": 7,
-        "2 Weeks": 14,
-        "1 Month": 30,
-        "3 Months": 90,
-        "6 Months": 180,
-        "1 Year": 252,
-        "2 Years": 504
-    }
-    
-    returns = {}
-    for period_name, period_days in time_periods.items():
-        returns[period_name] = data.pct_change(periods=period_days).iloc[-1] * 100
-    
-    return pd.DataFrame(returns)
-
-# heatmap
-def plot_heatmap(returns_df):
-    plt.figure(figsize=(10, 6))
-    
-    # Custom colormap for negative values
-    cmap = sns.diverging_palette(220, 20, as_cmap=True)
-
-    # Plot heatmap
-    sns.heatmap(
-        returns_df,
-        annot=True,
-        cmap=cmap,
-        center=0,
-        linewidths=.5,
-        cbar=False,  # Removed color bar as requested
-        fmt=".2%",
-        annot_kws={"size": 10}
-    )
-    
-    plt.title("Returns Heatmap")
-    st.pyplot(plt.gcf())
-
 # Streamlit app with tabs
 st.title("Dashboard")
 
@@ -179,17 +137,6 @@ with tab2:
             st.error("No data found for the given symbols. Please check your input.")
 
     
-# Returns Heatmap
 with tab3:
     st.header("Returns Heatmap")
-    st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
-    symbols_input = st.text_input("Stock Symbols", value="", key="symbols_input_tab3")
-    symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
-
-    if st.button("Generate Heatmap", key="heatmap_button_tab3"):
-        data = fetch_data(symbols)
-        if not data.empty:
-            returns_df = calculate_returns(data).T  # Transpose the DataFrame to switch x and y labels
-            plot_returns_heatmap(returns_df)
-        else:
-            st.error("No data found for the given symbols. Please check your input.")
+    st.write("coming soon")
