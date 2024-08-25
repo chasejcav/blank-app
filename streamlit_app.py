@@ -27,7 +27,8 @@ def calculate_daily_returns(data):
     start_date = daily_returns.index.min()
     end_date = daily_returns.index.max()
     correlation_matrix = daily_returns.corr()
-    return correlation_matrix, start_date, end_date
+    annual_returns = daily_returns.mean() * 252 * 100
+    return correlation_matrix, start_date, end_date, annual_returns
 
 
 # Function to plot heatmap with custom color scheme
@@ -100,6 +101,20 @@ with tab1:
 
 with tab2:
     st.header("Return & Volatility")
-    st.write("coming soon")
+    st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
+    symbols_input = st.text_input("Stock Symbols",value="")
+    symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
+
+    if st.button("Calculate Average Annual Return"):
+        data = fetch_data(symbols)
+        if not data.empty:
+            annual_returns, start_data, end_date = calculate_daily_returns(data)
+            st.write(f"**Data used from {start_date.date()} to {end_date.date()}**")
+            st.write("**The average annual returns are:**")
+            st.write(annual_returns)
+        else:
+            st.error("No data found for the given symbols. Please check your input.")
+
+
     
    
