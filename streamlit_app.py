@@ -77,9 +77,11 @@ def plot_heatmap(correlation_matrix):
 
 # Function to calculate average annual returns
 def calculate_average_annual_returns(data):
-    returns = data.pct_change().dropna()
-    avg_annual_returns = returns.mean() * 252 * 100
-    return avg_annual_returns.round(2)
+    avg_annual_returns = daily_returns.mean() * 252 * 100
+    start_date = data.index.min().strftime('%Y-%m-%d')
+    end_date = data.index.max().strftime('%Y-%m-%d')
+    return avg_annual_returns.round(2), start_date, end_date
+
 
 
 # Streamlit app with tabs
@@ -113,8 +115,9 @@ with tab2:
 
     if st.button("Calculate Average Annual Returns"):
         data = fetch_data(symbols)
-        if not data.empty:
-            avg_annual_returns = calculate_average_annual_returns(data)
+        if not data.empty():
+            avg_annual_returns, start_date, end_date = calculate_average_annual_returns_and_date_range(data)
+            st.write(f"**Data used from {start_date} to {end_date}**")
             st.write("**Average Annual Returns (in %):**")
             st.write(avg_annual_returns)
         else:
