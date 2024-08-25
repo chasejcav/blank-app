@@ -27,8 +27,7 @@ def calculate_daily_returns(data):
     start_date = daily_returns.index.min()
     end_date = daily_returns.index.max()
     correlation_matrix = daily_returns.corr()
-    annual_returns = daily_returns.mean() * 252 * 100
-    return correlation_matrix, start_date, end_date, annual_returns
+    return correlation_matrix, start_date, end_date
 
 
 # Function to plot heatmap with custom color scheme
