@@ -25,11 +25,17 @@ def calculate_daily_returns(data):
     correlation_matrix = daily_returns.corr()
     return correlation_matrix, start_date, end_date
 
-# Function to calculate portfolio metrics
 def calculate_portfolio_metrics(daily_returns, weights):
+    # Calculate portfolio daily returns
     portfolio_returns = daily_returns.dot(weights)
-    annual_return = portfolio_returns.mean() * 252 * 100
-    annual_std_dev = portfolio_returns.std() * (252 ** 0.5) * 100
+    
+    # Calculate annualized return using compounding
+    cumulative_return = (1 + portfolio_returns).prod()
+    annual_return = (cumulative_return ** (252 / len(portfolio_returns)) - 1) * 100
+    
+    # Calculate annualized standard deviation
+    annual_std_dev = portfolio_returns.std() * np.sqrt(252) * 100
+    
     return round(annual_return, 2), round(annual_std_dev, 2)
 
 # Function to plot heatmap with custom color scheme
