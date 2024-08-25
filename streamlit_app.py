@@ -123,7 +123,6 @@ with tab2:
             end_date = data.index.max().strftime('%Y-%m-%d')
             annual_returns, annual_std_devs = calculate_metrics(data)
             
-            st.write(f"**Data used from {start_date} to {end_date}**")
             st.write("**Annual Return & Standard Deviation:**")
 
             # Display the results
