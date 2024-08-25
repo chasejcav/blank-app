@@ -87,11 +87,44 @@ def plot_heatmap(correlation_matrix):
 
     st.pyplot(plt.gcf())
 
+
+# Define the treasury symbols for different maturities
+treasury_symbols = {
+    '1M': '^IRX',    # 1 Month
+    '6M': '^FVX',    # 6 Month
+    '2Y': '^GS2',    # 2 Year
+    '5Y': '^GS5',    # 5 Year
+    '10Y': '^TNX',   # 10 Year
+    '20Y': '^GS20',  # 20 Year
+    '30Y': '^TYX'    # 30 Year
+}
+
+# Fetch treasury yield data from Yahoo Finance
+def fetch_treasury_yields(symbols):
+    data = {}
+    for maturity, symbol in symbols.items():
+        ticker = yf.Ticker(symbol)
+        hist = ticker.history(period="1d")
+        if not hist.empty:
+            data[maturity] = hist['Close'].values[0]
+    return pd.Series(data)
+
+# Plot yield curve
+def plot_yield_curve(yield_data):
+    plt.figure(figsize=(10, 6))
+    plt.plot(yield_data.index, yield_data.values, marker='o')
+    plt.title("US Treasury Yield Curve")
+    plt.xlabel("Maturity")
+    plt.ylabel("Yield (%)")
+    plt.grid(True)
+    st.pyplot(plt.gcf())
+
+
 # Streamlit app with tabs
 st.title("Dashboard")
 
 # Create tabs
-tab1, tab2 = st.tabs(["Correlation Matrix", "Return & Volatility"])
+tab1, tab2, tab3 = st.tabs(["Correlation Matrix", "Return & Volatility", "Yield Curve"])
 
 with tab1:
     st.header("Correlation Matrix")
@@ -133,7 +166,15 @@ with tab2:
         else:
             st.error("No data found for the given symbols. Please check your input.")
   
-
+with tab3:
+    st.header("US Treasury Yield Curve")
+    yield_data = fetch_treasury_yields(treasury_symbols)
+    if not yield_data.empty:
+        st.write("Latest Treasury Yields:")
+        st.dataframe(yield_data)
+        plot_yield_curve(yield_data)
+    else:
+        st.error("Failed to fetch yield data. Please try again later.")
 
     
    
