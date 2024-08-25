@@ -145,8 +145,6 @@ with tab2:
                 'Annual Standard Deviation (%)': annual_std_devs
             })
             st.dataframe(metrics_df)
+            plot_performance(data)
         else:
             st.error("No data found for the given symbols. Please check your input.")
-  
-        # Plot performance
-            plot_performance(data)
