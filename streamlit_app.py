@@ -88,31 +88,43 @@ def plot_heatmap(correlation_matrix):
 
     st.pyplot(plt.gcf())
 
-# Function to fetch stock data and calculate returns
-def fetch_and_calculate_returns(symbols, periods):
-    end_date = pd.Timestamp.today()
-    start_date = end_date - timedelta(days=2*365)  # Fetch data for the past 2 years
+# Function to calculate percentage returns over various time periods
+def calculate_returns(data):
+    time_periods = {
+        "1 Day": 1,
+        "3 Days": 3,
+        "1 Week": 7,
+        "2 Weeks": 14,
+        "1 Month": 30,
+        "3 Months": 90,
+        "6 Months": 180,
+        "1 Year": 252,
+        "2 Years": 504
+    }
+    
+    returns = {}
+    for period_name, period_days in time_periods.items():
+        returns[period_name] = data.pct_change(periods=period_days).iloc[-1] * 100
+    
+    return pd.DataFrame(returns)
 
-    data = yf.download(symbols, start=start_date, end=end_date)
-    adj_close = data['Adj Close']
+# Function to plot the returns heatmap
+def plot_returns_heatmap(returns_df):
+    # Create a color map that darkens with more negative values
+    cmap = sns.diverging_palette(240, 10, as_cmap=True)
 
-    # Calculate returns for specified periods
-    returns = pd.DataFrame()
-    for period in periods:
-        returns[f'{period} Return'] = adj_close.pct_change(periods=period).iloc[-1] * 100
-
-    return returns
-
-# Function to plot the heatmap
-def plot_returns_heatmap(returns):
-    plt.figure(figsize=(10, 6))
-
-    # Define a custom colormap for the heatmap
-    cmap = sns.diverging_palette(220, 20, as_cmap=True)
-
-    sns.heatmap(returns, annot=True, fmt=".2f", cmap=cmap, center=0,
-                linewidths=.5, linecolor='gray', cbar=False)
-
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(
+        returns_df.T, 
+        annot=True, 
+        fmt=".2f", 
+        cmap=cmap, 
+        center=0, 
+        linewidths=.5, 
+        cbar=False,  # Remove the color bar
+        annot_kws={"size": 12}
+    )
+    plt.title("Returns Heatmap")
     st.pyplot(plt.gcf())
 
 # Streamlit app with tabs
@@ -164,39 +176,17 @@ with tab2:
             st.error("No data found for the given symbols. Please check your input.")
 
     
-# Returns Heatmap
+# Tab 3: Returns Heatmap
 with tab3:
     st.header("Returns Heatmap")
     st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
     symbols_input = st.text_input("Stock Symbols", value="", key="symbols_input_tab3")
     symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
 
-    # Define periods for return calculations
-    periods = {
-        '1D': 1,
-        '3D': 3,
-        '1W': 5,     # 1 Week = 5 trading days
-        '2W': 10,    # 2 Weeks = 10 trading days
-        '1M': 21,    # 1 Month = 21 trading days
-        '3M': 63,    # 3 Months = 63 trading days
-        '6M': 126,   # 6 Months = 126 trading days
-        '1Y': 252,   # 1 Year = 252 trading days
-        '2Y': 504    # 2 Years = 504 trading days
-    }
-
-    if st.button("Generate Returns Heatmap", key="generate_button_tab3"):
-        if symbols:
-            try:
-                returns = fetch_and_calculate_returns(symbols, list(periods.values()))
-
-                # Update columns to include period labels
-                returns.columns = periods.keys()
-
-                if not returns.empty:
-                    plot_returns_heatmap(returns)
-                else:
-                    st.error("No data found for the given symbols.")
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
+    if st.button("Generate Heatmap", key="heatmap_button_tab3"):
+        data = fetch_data(symbols)
+        if not data.empty:
+            returns_df = calculate_returns(data)
+            plot_returns_heatmap(returns_df)
         else:
-            st.error("Please enter at least one stock symbol.")
+            st.error("No data found for the given symbols. Please check your input.")
