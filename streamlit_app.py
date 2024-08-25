@@ -88,6 +88,38 @@ def plot_heatmap(correlation_matrix):
 
     st.pyplot(plt.gcf())
 
+# calculate returns over various periods
+def calculate_returns(data):
+    returns = pd.DataFrame(index=data.columns)
+    
+    # Last trading day
+    last_date = data.index[-1]
+    
+    # trading day periods
+    trading_periods = {
+        '1 Day': 1,
+        '3 Days': 3,
+        '1 Week': 5,
+        '2 Weeks': 10,
+        '1 Month': 21,
+        '3 Months': 63,
+        '6 Months': 126,
+        '1 Year': 252,
+        '2 Years': 504
+    }
+    
+    for label, trading_days in trading_periods.items():
+        past_date = last_date - pd.DateOffset(days=trading_days)
+        if past_date in data.index:
+            past_prices = data.loc[past_date]
+            recent_prices = data.loc[last_date]
+            returns[label] = (recent_prices - past_prices) / past_prices * 100
+        else:
+            returns[label] = None  # Set to None if past date is not available
+    
+    return returns
+
+
 # Streamlit app with tabs
 st.title("Dashboard")
 
@@ -137,6 +169,21 @@ with tab2:
             st.error("No data found for the given symbols. Please check your input.")
 
     
+# Streamlit app
 with tab3:
-    st.header("Returns Heatmap")
-    st.write("coming soon")
+    st.header("Returns Data")
+    st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
+    symbols_input = st.text_input("Stock Symbols", value="", key="symbols_input_tab3")
+    symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
+
+    if st.button("Calculate", key="returns_button_tab3"):
+        if symbols:
+            data = fetch_data(symbols)
+            if not data.empty:
+                returns_df = calculate_returns(data)
+                st.write("**Returns from Last Trading Day:**")
+                st.dataframe(returns_df)
+            else:
+                st.error("No data found for the given symbols. Please check your input.")
+        else:
+            st.error("Please enter at least one stock symbol.")
