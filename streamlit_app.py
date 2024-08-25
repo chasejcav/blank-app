@@ -115,46 +115,6 @@ def plot_returns_heatmap(returns):
 
     st.pyplot(plt.gcf())
 
-# Returns Heatmap
-def tab3_returns_heatmap():
-    st.header("Returns Heatmap")
-    st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
-    symbols_input = st.text_input("Stock Symbols", value="", key="symbols_input_tab3")
-    symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
-
-    # Define periods for return calculations
-    periods = {
-        '1D': 1,
-        '3D': 3,
-        '1W': 5,     # 1 Week = 5 trading days
-        '2W': 10,    # 2 Weeks = 10 trading days
-        '1M': 21,    # 1 Month = 21 trading days
-        '3M': 63,    # 3 Months = 63 trading days
-        '6M': 126,   # 6 Months = 126 trading days
-        '1Y': 252,   # 1 Year = 252 trading days
-        '2Y': 504    # 2 Years = 504 trading days
-    }
-
-    if st.button("Generate Returns Heatmap", key="generate_button_tab3"):
-        if symbols:
-            try:
-                returns = fetch_and_calculate_returns(symbols, list(periods.values()))
-
-                # Update columns to include period labels
-                returns.columns = periods.keys()
-
-                if not returns.empty:
-                    plot_returns_heatmap(returns)
-                else:
-                    st.error("No data found for the given symbols.")
-            except Exception as e:
-                st.error(f"An error occurred: {str(e)}")
-        else:
-            st.error("Please enter at least one stock symbol.")
-
-
-
-
 # Streamlit app with tabs
 st.title("Dashboard")
 
@@ -203,5 +163,40 @@ with tab2:
         else:
             st.error("No data found for the given symbols. Please check your input.")
 
-tab3_returns_heatmap()
     
+# Returns Heatmap
+with tab2:
+    st.header("Returns Heatmap")
+    st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
+    symbols_input = st.text_input("Stock Symbols", value="", key="symbols_input_tab3")
+    symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
+
+    # Define periods for return calculations
+    periods = {
+        '1D': 1,
+        '3D': 3,
+        '1W': 5,     # 1 Week = 5 trading days
+        '2W': 10,    # 2 Weeks = 10 trading days
+        '1M': 21,    # 1 Month = 21 trading days
+        '3M': 63,    # 3 Months = 63 trading days
+        '6M': 126,   # 6 Months = 126 trading days
+        '1Y': 252,   # 1 Year = 252 trading days
+        '2Y': 504    # 2 Years = 504 trading days
+    }
+
+    if st.button("Generate Returns Heatmap", key="generate_button_tab3"):
+        if symbols:
+            try:
+                returns = fetch_and_calculate_returns(symbols, list(periods.values()))
+
+                # Update columns to include period labels
+                returns.columns = periods.keys()
+
+                if not returns.empty:
+                    plot_returns_heatmap(returns)
+                else:
+                    st.error("No data found for the given symbols.")
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")
+        else:
+            st.error("Please enter at least one stock symbol.")
