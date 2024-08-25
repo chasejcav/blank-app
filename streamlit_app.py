@@ -92,7 +92,7 @@ def plot_heatmap(correlation_matrix):
 treasury_symbols = {
     '1M': '^IRX',    # 1 Month
     '6M': '^FVX',    # 6 Month
-    '2Y': '^GS2',    # 2 Year
+    '2Y': '2YY=F',    # 2 Year
     '5Y': '^GS5',    # 5 Year
     '10Y': '^TNX',   # 10 Year
     '20Y': '^GS20',  # 20 Year
