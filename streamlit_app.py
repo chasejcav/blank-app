@@ -108,14 +108,14 @@ def calculate_returns(data):
     
     return pd.DataFrame(returns)
 
-# Function to plot the returns heatmap
+#  plot the returns heatmap
 def plot_returns_heatmap(returns_df):
-    # Create a color map that darkens with more negative values
-    cmap = sns.diverging_palette(240, 10, as_cmap=True)
+    # color map (Red for negative, Green for positive)
+    cmap = sns.diverging_palette(150, 10, as_cmap=True)  # This creates a palette from green to red
 
     plt.figure(figsize=(10, 8))
     sns.heatmap(
-        returns_df.T, 
+        returns_df,  # Switch x and y labels
         annot=True, 
         fmt=".2f", 
         cmap=cmap, 
@@ -125,6 +125,8 @@ def plot_returns_heatmap(returns_df):
         annot_kws={"size": 12}
     )
     plt.title("Returns Heatmap")
+    plt.xlabel("Time Period")
+    plt.ylabel("Stock Symbol")
     st.pyplot(plt.gcf())
 
 # Streamlit app with tabs
@@ -176,7 +178,7 @@ with tab2:
             st.error("No data found for the given symbols. Please check your input.")
 
     
-# Tab 3: Returns Heatmap
+# Returns Heatmap
 with tab3:
     st.header("Returns Heatmap")
     st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
@@ -186,7 +188,7 @@ with tab3:
     if st.button("Generate Heatmap", key="heatmap_button_tab3"):
         data = fetch_data(symbols)
         if not data.empty:
-            returns_df = calculate_returns(data)
+            returns_df = calculate_returns(data).T  # Transpose the DataFrame to switch x and y labels
             plot_returns_heatmap(returns_df)
         else:
             st.error("No data found for the given symbols. Please check your input.")
