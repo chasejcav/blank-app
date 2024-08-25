@@ -88,14 +88,13 @@ def plot_heatmap(correlation_matrix):
 
     st.pyplot(plt.gcf())
 
-# calculate returns over various periods
 def calculate_returns(data):
     returns = pd.DataFrame(index=data.columns)
     
     # Last trading day
     last_date = data.index[-1]
     
-    # trading day periods
+    # Define trading day periods (approximate number of trading days in each period)
     trading_periods = {
         '1 Day': 1,
         '3 Days': 3,
@@ -110,15 +109,19 @@ def calculate_returns(data):
     
     for label, trading_days in trading_periods.items():
         past_date = last_date - pd.DateOffset(days=trading_days)
-        if past_date in data.index:
-            past_prices = data.loc[past_date]
+        
+        # Ensure there is data for the past date by getting the closest available date if necessary
+        closest_date = data.index[data.index.get_loc(past_date, method='nearest')]
+        
+        # Check if the closest date is within the desired range
+        if closest_date >= past_date:
+            past_prices = data.loc[closest_date]
             recent_prices = data.loc[last_date]
             returns[label] = (recent_prices - past_prices) / past_prices * 100
         else:
-            returns[label] = None  # Set to None if past date is not available
+            returns[label] = None  # Set to None if no valid date is available
     
     return returns
-
 
 # Streamlit app with tabs
 st.title("Dashboard")
@@ -169,14 +172,13 @@ with tab2:
             st.error("No data found for the given symbols. Please check your input.")
 
     
-# Streamlit app
 with tab3:
     st.header("Returns Data")
     st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
     symbols_input = st.text_input("Stock Symbols", value="", key="symbols_input_tab3")
     symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
 
-    if st.button("Calculate", key="returns_button_tab3"):
+    if st.button("Calculate Returns", key="returns_button_tab3"):
         if symbols:
             data = fetch_data(symbols)
             if not data.empty:
