@@ -118,7 +118,7 @@ with tab2:
     symbols_input = st.text_input("Stock Symbols", value="", key="symbols_input_tab2")
     symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
 
-    if st.button("Calculate Metrics", key="calculate_button_tab2"):
+    if st.button("Calculate", key="calculate_button_tab2"):
         data = fetch_data(symbols)
         if not data.empty:
             start_date = data.index.min().strftime('%Y-%m-%d')
