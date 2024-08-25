@@ -108,21 +108,23 @@ def calculate_returns(data):
     
     return pd.DataFrame(returns)
 
-#  plot the returns heatmap
+# Function to plot the returns heatmap
 def plot_returns_heatmap(returns_df):
-    # color map (Red for negative, Green for positive)
-    cmap = sns.diverging_palette(150, 10, as_cmap=True)  # This creates a palette from green to red
+    # Create a custom diverging color map (Red for negative, Green for positive)
+    cmap = sns.diverging_palette(240, 10, as_cmap=True)  # This creates a palette from red to green
 
-    plt.figure(figsize=(10, 8))
+    plt.figure(figsize=(12, 8))
     sns.heatmap(
-        returns_df,  # Switch x and y labels
-        annot=True, 
-        fmt=".2f", 
-        cmap=cmap, 
-        center=0, 
-        linewidths=.5, 
+        returns_df,
+        annot=True,
+        fmt=".2f",
+        cmap=cmap,
+        center=0,
+        linewidths=.5,
         cbar=False,  # Remove the color bar
-        annot_kws={"size": 12}
+        annot_kws={"size": 10},
+        vmin=-returns_df.max().abs().max(),  # Set vmin to the most negative value
+        vmax=returns_df.max().abs().max()  # Set vmax to the most positive value
     )
     plt.title("Returns Heatmap")
     plt.xlabel("Time Period")
