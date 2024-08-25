@@ -87,66 +87,72 @@ def plot_heatmap(correlation_matrix):
 
     st.pyplot(plt.gcf())
 
-# function to fetch stock data specifically for the returns heatmap
-def fetch_returns_data(symbols):
-    data = {}
-    for symbol in symbols:
-        stock = yf.Ticker(symbol)
-        df = stock.history(period="2y")
-        if 'Adj Close' in df.columns:
-            data[symbol] = df['Adj Close']
-        else:
-            data[symbol] = df['Close']
-    return pd.DataFrame(data)
+# Function to fetch stock data and calculate returns
+def fetch_and_calculate_returns(symbols, periods):
+    end_date = pd.Timestamp.today()
+    start_date = end_date - timedelta(days=2*365)  # Fetch data for the past 2 years
 
-# Function to calculate returns for different time frames
-def calculate_returns(data):
-    returns = {}
-    time_frames = {
+    data = yf.download(symbols, start=start_date, end=end_date)
+    adj_close = data['Adj Close']
+
+    # Calculate returns for specified periods
+    returns = pd.DataFrame()
+    for period in periods:
+        returns[f'{period} Return'] = adj_close.pct_change(periods=period).iloc[-1] * 100
+
+    return returns
+
+# Function to plot the heatmap
+def plot_returns_heatmap(returns):
+    plt.figure(figsize=(10, 6))
+
+    # Define a custom colormap for the heatmap
+    cmap = sns.diverging_palette(220, 20, as_cmap=True)
+
+    sns.heatmap(returns, annot=True, fmt=".2f", cmap=cmap, center=0,
+                linewidths=.5, linecolor='gray', cbar=False)
+
+    st.pyplot(plt.gcf())
+
+# Returns Heatmap
+def tab3_returns_heatmap():
+    st.header("Returns Heatmap")
+    st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
+    symbols_input = st.text_input("Stock Symbols", value="", key="symbols_input_tab3")
+    symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
+
+    # Define periods for return calculations
+    periods = {
         '1D': 1,
         '3D': 3,
-        '1W': 7,
-        '2W': 14,
-        '1M': 30,
-        '3M': 90,
-        '6M': 180,
-        '1Y': 252,
-        '2Y': 504,
+        '1W': 5,     # 1 Week = 5 trading days
+        '2W': 10,    # 2 Weeks = 10 trading days
+        '1M': 21,    # 1 Month = 21 trading days
+        '3M': 63,    # 3 Months = 63 trading days
+        '6M': 126,   # 6 Months = 126 trading days
+        '1Y': 252,   # 1 Year = 252 trading days
+        '2Y': 504    # 2 Years = 504 trading days
     }
-    
-    for label, days in time_frames.items():
-        returns[label] = data.pct_change(periods=days).iloc[-1] * 100  # Multiply by 100 to get percentage
-    
-    returns_df = pd.DataFrame(returns)
-    returns_df.index.name = 'Symbol'
-    return returns_df
+
+    if st.button("Generate Returns Heatmap", key="generate_button_tab3"):
+        if symbols:
+            try:
+                returns = fetch_and_calculate_returns(symbols, list(periods.values()))
+
+                # Update columns to include period labels
+                returns.columns = periods.keys()
+
+                if not returns.empty:
+                    plot_returns_heatmap(returns)
+                else:
+                    st.error("No data found for the given symbols.")
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")
+        else:
+            st.error("Please enter at least one stock symbol.")
 
 
-def plot_returns_heatmap(returns_df):
-    # Create a custom color map: red for negative, white for zero, and green for positive
-    cmap = sns.diverging_palette(240, 10, as_cmap=True)
 
-    # Set up the mask to color NaN values as white
-    mask = returns_df.isnull()
-
-    # Create the heatmap
-    plt.figure(figsize=(10, 8))
-    sns.heatmap(
-        returns_df, 
-        cmap=cmap, 
-        annot=True, 
-        fmt=".2f", 
-        mask=mask,
-        center=0,  # Center the colormap at 0
-        linewidths=.5,
-        cbar=False,  # Remove the color bar
-        annot_kws={"size": 8}
-    )
-
-    plt.xticks(rotation=45, ha='right')
-    plt.yticks(rotation=0)
-    plt.title('Returns Heatmap', fontsize=16)
-    st.pyplot(plt.gcf())
 
 # Streamlit app with tabs
 st.title("Dashboard")
@@ -196,18 +202,5 @@ with tab2:
         else:
             st.error("No data found for the given symbols. Please check your input.")
 
-# Returns heatmap tab
-with tab3:
-    st.header("Returns Heatmap")
-    st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
-    symbols_input = st.text_input("Stock Symbols", value="", key="symbols_input_tab3")
-    symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
-
-    if st.button("Generate Returns Heatmap", key="generate_button_tab3"):
-        data = fetch_stock_data(symbols)
-        if not data.empty:
-            returns_df = calculate_returns(data)
-            plot_returns_heatmap(returns_df)
-        else:
-            st.error("No data found for the given symbols. Please check your input.")
+tab3_returns_heatmap()
     
