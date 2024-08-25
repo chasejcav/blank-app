@@ -75,62 +75,6 @@ def plot_heatmap(correlation_matrix):
 
     st.pyplot(plt.gcf())
 
-# Define your FRED API key and base URL
-FRED_API_KEY = '25e2b0598c9846c50064eb3a0d2a30b7'
-
-# Function to fetch yield curve data from FRED API
-def fetch_yield_curve():
-    # Example series IDs for U.S. Treasury yields (you may need to adjust these)
-    series_ids = {
-        '1M': 'DTB1YR',  # 1-month Treasury
-        '3M': 'DTB3',    # 3-month Treasury
-        '6M': 'DTB6',    # 6-month Treasury
-        '1Y': 'DTB1',    # 1-year Treasury
-        '2Y': 'GS2',     # 2-year Treasury
-        '5Y': 'GS5',     # 5-year Treasury
-        '10Y': 'GS10',   # 10-year Treasury
-        '30Y': 'GS30'    # 30-year Treasury
-    }
-    
-    # Fetch data for all series
-    yield_data = {}
-    for maturity, series_id in series_ids.items():
-        url = f"https://fred.stlouisfed.org/data/{series_id}&api_key={FRED_API_KEY}&file_type=csv"
-        df = pd.read_csv(url, parse_dates=['DATE'], index_col='DATE')
-        yield_data[maturity] = df[series_id]
-    
-    # Combine all series into a single DataFrame
-    yield_df = pd.DataFrame(yield_data)
-    return yield_df
-
-# Function to plot yield curve using plotly
-def plot_yield_curve(df):
-    fig = go.Figure()
-    
-    # Add traces for each maturity
-    for column in df.columns:
-        fig.add_trace(go.Scatter(
-            x=df.index,
-            y=df[column],
-            mode='lines+markers',
-            name=f'{column} Yield Curve',
-            line=dict(width=2)
-        ))
-    
-    fig.update_layout(
-        title='Current Yield Curve',
-        xaxis_title='Date',
-        yaxis_title='Yield (%)',
-        xaxis=dict(type='date'),
-        template='plotly_white'
-    )
-    
-    st.plotly_chart(fig)
-
-
-
-
-
 
 # Streamlit app with tabs
 st.title("Dashboard")
@@ -157,12 +101,7 @@ with tab1:
 
 
 with tab2:
-    st.header("Yield Curve")
+    st.header("Return & Volatility")
+    st.write("coming soon...")
     
-    # Fetch and plot the yield curve data
-    yield_curve_df = fetch_yield_curve()
-    if not yield_curve_df.empty:
-        plot_yield_curve(yield_curve_df)
-    else:
-        st.error("Failed to fetch yield curve data.")
    
