@@ -135,41 +135,4 @@ with tab2:
         else:
             st.error("No data found for the given symbols. Please check your input.")
   
-with tab3:
-    st.header("Futures Data")
-    st.write("Displaying latest futures data:")
-
-    # Define futures symbols and their names
-    futures_symbols = {
-        'S&P 500': 'ES=F', 
-        'NASDAQ': 'NQ=F', 
-        'Oil': 'CL=F', 
-        'Gold': 'GC=F', 
-        'Silver': 'SI=F', 
-        '2-Year T-Note': 'ZT=F', 
-        '10-Year T-Note': 'ZN=F'
-    }
-
-    # Fetch data for all futures symbols
-    futures_data = {}
-    for name, symbol in futures_symbols.items():
-        try:
-            # Fetch the latest data
-            ticker = yf.Ticker(symbol)
-            data = ticker.history(period="1d")
-            if data.empty:
-                st.error(f"No data returned for {name} ({symbol}).")
-                continue
-            # Store the latest close price
-            latest_close = data['Close'].iloc[-1]
-            futures_data[name] = latest_close
-        except Exception as e:
-            st.error(f"Error fetching data for {name} ({symbol}): {e}")
-
-    # Convert the data to a DataFrame
-    if futures_data:
-        futures_df = pd.DataFrame(list(futures_data.items()), columns=['Future', 'Price'])
-        st.write(futures_df)
-    else:
-        st.write("No futures data available.")
    
