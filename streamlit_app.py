@@ -156,14 +156,20 @@ with tab3:
         try:
             # Fetch the latest data
             ticker = yf.Ticker(symbol)
-            data = ticker.history(period="1d")['Close']
+            data = ticker.history(period="1d")
+            if data.empty:
+                st.error(f"No data returned for {name} ({symbol}).")
+                continue
             # Store the latest close price
-            futures_data[name] = data.iloc[-1]
+            latest_close = data['Close'].iloc[-1]
+            futures_data[name] = latest_close
         except Exception as e:
             st.error(f"Error fetching data for {name} ({symbol}): {e}")
 
     # Convert the data to a DataFrame
-    futures_df = pd.DataFrame(list(futures_data.items()), columns=['Future', 'Price'])
-    st.write(futures_df)
-    
+    if futures_data:
+        futures_df = pd.DataFrame(list(futures_data.items()), columns=['Future', 'Price'])
+        st.write(futures_df)
+    else:
+        st.write("No futures data available.")
    
