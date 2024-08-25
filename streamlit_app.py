@@ -5,6 +5,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
+import plotly.graph_objects as go
+import requests
+
 
 # Function to fetch adjusted stock prices
 def fetch_data(symbols):
@@ -26,18 +29,6 @@ def calculate_daily_returns(data):
     correlation_matrix = daily_returns.corr()
     return correlation_matrix, start_date, end_date
 
-def calculate_portfolio_metrics(daily_returns, weights):
-    # Calculate portfolio daily returns
-    portfolio_returns = daily_returns.dot(weights)
-    
-    # Calculate annualized return using compounding
-    cumulative_return = (1 + portfolio_returns).prod()
-    annual_return = (cumulative_return ** (252 / len(portfolio_returns)) - 1) * 100
-    
-    # Calculate annualized standard deviation
-    annual_std_dev = portfolio_returns.std() * np.sqrt(252)
-    
-    return round(annual_return, 2), round(annual_std_dev, 2)
 
 # Function to plot heatmap with custom color scheme
 def plot_heatmap(correlation_matrix):
@@ -84,6 +75,62 @@ def plot_heatmap(correlation_matrix):
 
     st.pyplot(plt.gcf())
 
+# Define your FRED API key and base URL
+FRED_API_KEY = '25e2b0598c9846c50064eb3a0d2a30b7'
+
+# Function to fetch yield curve data from FRED API
+def fetch_yield_curve():
+    # Example series IDs for U.S. Treasury yields (you may need to adjust these)
+    series_ids = {
+        '1M': 'DTB1YR',  # 1-month Treasury
+        '3M': 'DTB3',    # 3-month Treasury
+        '6M': 'DTB6',    # 6-month Treasury
+        '1Y': 'DTB1',    # 1-year Treasury
+        '2Y': 'GS2',     # 2-year Treasury
+        '5Y': 'GS5',     # 5-year Treasury
+        '10Y': 'GS10',   # 10-year Treasury
+        '30Y': 'GS30'    # 30-year Treasury
+    }
+    
+    # Fetch data for all series
+    yield_data = {}
+    for maturity, series_id in series_ids.items():
+        url = f"https://fred.stlouisfed.org/data/{series_id}&api_key={FRED_API_KEY}&file_type=csv"
+        df = pd.read_csv(url, parse_dates=['DATE'], index_col='DATE')
+        yield_data[maturity] = df[series_id]
+    
+    # Combine all series into a single DataFrame
+    yield_df = pd.DataFrame(yield_data)
+    return yield_df
+
+# Function to plot yield curve using plotly
+def plot_yield_curve(df):
+    fig = go.Figure()
+    
+    # Add traces for each maturity
+    for column in df.columns:
+        fig.add_trace(go.Scatter(
+            x=df.index,
+            y=df[column],
+            mode='lines+markers',
+            name=f'{column} Yield Curve',
+            line=dict(width=2)
+        ))
+    
+    fig.update_layout(
+        title='Current Yield Curve',
+        xaxis_title='Date',
+        yaxis_title='Yield (%)',
+        xaxis=dict(type='date'),
+        template='plotly_white'
+    )
+    
+    st.plotly_chart(fig)
+
+
+
+
+
 
 # Streamlit app with tabs
 st.title("Dashboard")
@@ -110,29 +157,12 @@ with tab1:
 
 
 with tab2:
-    st.header("Return & Volatility")
-    symbols_input = st.text_input("Stock Symbols (comma-separated)", value="", key="tab2_symbols")
-    weights_input = st.text_input("Weights (comma-separated)", value="", key="tab2_weights")
-    symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
+    st.header("Yield Curve")
     
-    # Validate weights input
-    try:
-        weights = [float(weight.strip()) for weight in weights_input.split(',') if weight.strip() != ""]
-    except ValueError:
-        st.error("Error: All weights must be numeric values.")
-        weights = []
-    
-    if st.button("Calculate Portfolio Metrics"):
-        if len(weights) != len(symbols):
-            st.error("Error: The number of weights does not match the number of tickers.")
-        else:
-            data = fetch_data(symbols)
-            if not data.empty:
-                daily_returns, start_date, end_date = calculate_daily_returns(data)
-                annual_return, annual_std_dev = calculate_portfolio_metrics(daily_returns, weights)
-                
-                st.write(f"**Data used from {start_date.date()} to {end_date.date()}**")
-                st.write(f"**Annual Return (%):** {round(annual_return,2)}")
-                st.write(f"**Annual Standard Deviation (%):** {round(annual_std_dev,2)}")
-            else:
-                st.error("No data found for the given symbols. Please check your input.")
+    # Fetch and plot the yield curve data
+    yield_curve_df = fetch_yield_curve()
+    if not yield_curve_df.empty:
+        plot_yield_curve(yield_curve_df)
+    else:
+        st.error("Failed to fetch yield curve data.")
+   
