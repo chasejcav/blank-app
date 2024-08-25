@@ -88,52 +88,11 @@ def plot_heatmap(correlation_matrix):
 
     st.pyplot(plt.gcf())
 
-# Function to calculate returns
-def calculate_returns(data):
-    returns = pd.DataFrame(index=data.columns)
-    
-    # Last trading day
-    last_date = data.index[-1]
-    
-    # Define trading day periods (approximate number of trading days in each period)
-    trading_periods = {
-        '1 Day': 1,
-        '3 Days': 3,
-        '1 Week': 5,
-        '2 Weeks': 10,
-        '1 Month': 21,
-        '3 Months': 63,
-        '6 Months': 126,
-        '1 Year': 252,
-        '2 Years': 504
-    }
-    
-    for label, trading_days in trading_periods.items():
-        # Calculate the target date by subtracting trading_days
-        target_date = last_date - pd.DateOffset(days=trading_days)
-        
-        # Find the closest trading day to the target date
-        if target_date in data.index:
-            past_date = target_date
-        else:
-            # Use the last available trading day before the target date
-            past_date = data.index[data.index.get_loc(target_date, method='nearest')]
-
-        # Ensure we have valid past_date
-        if past_date < last_date:
-            past_prices = data.loc[past_date]
-            recent_prices = data.loc[last_date]
-            returns[label] = (recent_prices - past_prices) / past_prices * 100
-        else:
-            returns[label] = None  # Set to None if past_date is invalid or no data available
-
-    return returns
-
 # Streamlit app with tabs
 st.title("Dashboard")
 
 # Create tabs
-tab1, tab2, tab3 = st.tabs(["Correlation Matrix", "Return & Volatility","Returns Heatmap"])
+tab1, tab2 = st.tabs(["Correlation Matrix", "Return & Volatility"])
 
 # corr matrix tab
 with tab1:
@@ -176,21 +135,3 @@ with tab2:
             st.dataframe(metrics_df)
         else:
             st.error("No data found for the given symbols. Please check your input.")
-   
-with tab3:
-    st.header("Returns Data")
-    st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
-    symbols_input = st.text_input("Stock Symbols", value="", key="symbols_input_tab3")
-    symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
-
-    if st.button("Calculate Returns", key="returns_button_tab3"):
-        if symbols:
-            data = fetch_data(symbols)
-            if not data.empty:
-                returns_df = calculate_returns(data)
-                st.write("**Returns from Last Trading Day:**")
-                st.dataframe(returns_df)
-            else:
-                st.error("No data found for the given symbols. Please check your input.")
-        else:
-            st.error("Please enter at least one stock symbol.")
