@@ -88,6 +88,7 @@ def plot_heatmap(correlation_matrix):
 
     st.pyplot(plt.gcf())
 
+# Function to calculate returns
 def calculate_returns(data):
     returns = pd.DataFrame(index=data.columns)
     
@@ -108,23 +109,23 @@ def calculate_returns(data):
     }
     
     for label, trading_days in trading_periods.items():
-        # Calculate the desired past date
+        # Calculate the target date by subtracting trading_days
         target_date = last_date - pd.DateOffset(days=trading_days)
         
-        # Find the last available trading day before the target date
+        # Find the closest trading day to the target date
         if target_date in data.index:
             past_date = target_date
         else:
-            # Use the nearest available date if target_date is not available
+            # Use the last available trading day before the target date
             past_date = data.index[data.index.get_loc(target_date, method='bfill')]
-        
-        # Ensure that we are still using a valid date
+
+        # Ensure we have valid past_date
         if past_date < last_date:
             past_prices = data.loc[past_date]
             recent_prices = data.loc[last_date]
             returns[label] = (recent_prices - past_prices) / past_prices * 100
         else:
-            returns[label] = None  # Set to None if past date is not available
+            returns[label] = None  # Set to None if past_date is invalid or no data available
 
     return returns
 
