@@ -132,7 +132,7 @@ with tab2:
                 annual_return, annual_std_dev = calculate_portfolio_metrics(daily_returns, weights)
                 
                 st.write(f"**Data used from {start_date.date()} to {end_date.date()}**")
-                st.write(f"**Annual Return (%):** {annual_return}")
-                st.write(f"**Annual Standard Deviation (%):** {annual_std_dev}")
+                st.write(f"**Annual Return (%):** {round(annual_return,2)}")
+                st.write(f"**Annual Standard Deviation (%):** {round(annual_std_dev,2)}")
             else:
                 st.error("No data found for the given symbols. Please check your input.")
