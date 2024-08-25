@@ -165,7 +165,7 @@ with tab2:
 
     
 # Returns Heatmap
-with tab2:
+with tab3:
     st.header("Returns Heatmap")
     st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
     symbols_input = st.text_input("Stock Symbols", value="", key="symbols_input_tab3")
