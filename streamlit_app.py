@@ -114,7 +114,7 @@ with tab2:
         else:
             data = fetch_data(symbols)
             if not data.empty:
-                _, daily_returns, start_date, end_date = calculate_daily_returns(data)
+                daily_returns, start_date, end_date = calculate_daily_returns(data)
                 annual_return, annual_std_dev = calculate_portfolio_metrics(daily_returns, weights)
                 
                 st.write(f"**Data used from {start_date.date()} to {end_date.date()}**")
@@ -122,4 +122,3 @@ with tab2:
                 st.write(f"**Annual Standard Deviation (%):** {annual_std_dev}")
             else:
                 st.error("No data found for the given symbols. Please check your input.")
-
