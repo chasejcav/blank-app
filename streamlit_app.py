@@ -100,7 +100,13 @@ with tab2:
     symbols_input = st.text_input("Stock Symbols (comma-separated)", value="", key="tab2_symbols")
     weights_input = st.text_input("Weights (comma-separated)", value="", key="tab2_weights")
     symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
-    weights = [float(weight) for weight in weights_input.split(',')]
+    
+    # Validate weights input
+    try:
+        weights = [float(weight.strip()) for weight in weights_input.split(',') if weight.strip() != ""]
+    except ValueError:
+        st.error("Error: All weights must be numeric values.")
+        weights = []
     
     if st.button("Calculate Portfolio Metrics"):
         if len(weights) != len(symbols):
