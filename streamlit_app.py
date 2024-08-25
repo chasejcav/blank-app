@@ -137,15 +137,33 @@ with tab2:
   
 with tab3:
     st.header("Futures Data")
-    futures_symbols = ['ES=F', 'NQ=F', 'CL=F', 'GC=F', 'SI=F', 'ZT=F', 'ZN=F']
-    futures_names = ['S&P 500', 'NASDAQ', 'Oil', 'Gold', 'Silver', '2-Year T-Note', '10-Year T-Note']
-    
+    st.write("Displaying latest futures data:")
+
+    # Define futures symbols and their names
+    futures_symbols = {
+        'S&P 500': 'ES=F', 
+        'NASDAQ': 'NQ=F', 
+        'Oil': 'CL=F', 
+        'Gold': 'GC=F', 
+        'Silver': 'SI=F', 
+        '2-Year T-Note': 'ZT=F', 
+        '10-Year T-Note': 'ZN=F'
+    }
+
+    # Fetch data for all futures symbols
     futures_data = {}
-    for symbol, name in zip(futures_symbols, futures_names):
-        futures_data[name] = yf.Ticker(symbol).history(period="1d")['Close'].values[0]
-    
+    for name, symbol in futures_symbols.items():
+        try:
+            # Fetch the latest data
+            ticker = yf.Ticker(symbol)
+            data = ticker.history(period="1d")['Close']
+            # Store the latest close price
+            futures_data[name] = data.iloc[-1]
+        except Exception as e:
+            st.error(f"Error fetching data for {name} ({symbol}): {e}")
+
+    # Convert the data to a DataFrame
     futures_df = pd.DataFrame(list(futures_data.items()), columns=['Future', 'Price'])
     st.write(futures_df)
-
     
    
