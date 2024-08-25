@@ -88,14 +88,13 @@ def plot_heatmap(correlation_matrix):
 
     st.pyplot(plt.gcf())
 
-# calculate returns over various periods
 def calculate_returns(data):
     returns = pd.DataFrame(index=data.columns)
     
     # Last trading day
     last_date = data.index[-1]
     
-    # trading day periods
+    # Define trading day periods (approximate number of trading days in each period)
     trading_periods = {
         '1 Day': 1,
         '3 Days': 3,
@@ -109,14 +108,24 @@ def calculate_returns(data):
     }
     
     for label, trading_days in trading_periods.items():
-        past_date = last_date - pd.DateOffset(days=trading_days)
-        if past_date in data.index:
+        # Calculate the desired past date
+        target_date = last_date - pd.DateOffset(days=trading_days)
+        
+        # Find the last available trading day before the target date
+        if target_date in data.index:
+            past_date = target_date
+        else:
+            # Use the nearest available date if target_date is not available
+            past_date = data.index[data.index.get_loc(target_date, method='bfill')]
+        
+        # Ensure that we are still using a valid date
+        if past_date < last_date:
             past_prices = data.loc[past_date]
             recent_prices = data.loc[last_date]
             returns[label] = (recent_prices - past_prices) / past_prices * 100
         else:
             returns[label] = None  # Set to None if past date is not available
-    
+
     return returns
 
 # Streamlit app with tabs
