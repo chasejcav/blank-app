@@ -150,7 +150,3 @@ with tab2:
   
         # Plot performance
             plot_performance(data)
-        else:
-            st.error("No data found for the given symbols. Please check your input.")
-    else:
-            st.error("Please enter at least one stock symbol.")   
