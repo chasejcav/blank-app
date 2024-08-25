@@ -35,7 +35,7 @@ def calculate_portfolio_metrics(daily_returns, weights):
     annual_return = (cumulative_return ** (252 / len(portfolio_returns)) - 1) * 100
     
     # Calculate annualized standard deviation
-    annual_std_dev = portfolio_returns.std() * np.sqrt(252) * 100
+    annual_std_dev = portfolio_returns.std() * np.sqrt(252)
     
     return round(annual_return, 2), round(annual_std_dev, 2)
 
