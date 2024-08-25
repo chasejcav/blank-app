@@ -103,8 +103,7 @@ with tab1:
         data = fetch_data(symbols)
         if not data.empty:
             correlation_matrix, start_date, end_date = calculate_daily_returns(data)
-            st.write(f"**Data used from {start_date.date()} to {end_date.date()}**")
-            st.write("**Correlation Matrix (Based on Daily Returns):**")
+            st.write("**Correlation Matrix (Based on Historical Daily Returns):**")
                      
             plot_heatmap(correlation_matrix)
         else:
