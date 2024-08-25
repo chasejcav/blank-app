@@ -108,27 +108,26 @@ def calculate_returns(data):
     
     return pd.DataFrame(returns)
 
-# Function to plot the returns heatmap
-def plot_returns_heatmap(returns_df):
-    # Create a custom diverging color map (Red for negative, Green for positive)
-    cmap = sns.diverging_palette(240, 10, as_cmap=True)  # This creates a palette from red to green
+# heatmap
+def plot_heatmap(returns_df):
+    plt.figure(figsize=(10, 6))
+    
+    # Custom colormap for negative values
+    cmap = sns.diverging_palette(220, 20, as_cmap=True)
 
-    plt.figure(figsize=(12, 8))
+    # Plot heatmap
     sns.heatmap(
         returns_df,
         annot=True,
-        fmt=".2f",
         cmap=cmap,
         center=0,
         linewidths=.5,
-        cbar=False,  # Remove the color bar
-        annot_kws={"size": 10},
-        vmin=-returns_df.max().abs().max(),  # Set vmin to the most negative value
-        vmax=returns_df.max().abs().max()  # Set vmax to the most positive value
+        cbar=False,  # Removed color bar as requested
+        fmt=".2%",
+        annot_kws={"size": 10}
     )
+    
     plt.title("Returns Heatmap")
-    plt.xlabel("Time Period")
-    plt.ylabel("Stock Symbol")
     st.pyplot(plt.gcf())
 
 # Streamlit app with tabs
