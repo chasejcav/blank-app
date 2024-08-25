@@ -122,10 +122,30 @@ def calculate_returns(data):
     return returns_df
 
 
-# Function to plot the returns heatmap
 def plot_returns_heatmap(returns_df):
-    plt.figure(figsize=(10, 6))
-    sns.heatmap(returns_df, annot=True, cmap='RdYlGn', center=0, fmt=".2f", linewidths=.5)
+    # Create a custom color map: red for negative, white for zero, and green for positive
+    cmap = sns.diverging_palette(240, 10, as_cmap=True)
+
+    # Set up the mask to color NaN values as white
+    mask = returns_df.isnull()
+
+    # Create the heatmap
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(
+        returns_df, 
+        cmap=cmap, 
+        annot=True, 
+        fmt=".2f", 
+        mask=mask,
+        center=0,  # Center the colormap at 0
+        linewidths=.5,
+        cbar=False,  # Remove the color bar
+        annot_kws={"size": 8}
+    )
+
+    plt.xticks(rotation=45, ha='right')
+    plt.yticks(rotation=0)
+    plt.title('Returns Heatmap', fontsize=16)
     st.pyplot(plt.gcf())
 
 # Streamlit app with tabs
@@ -134,6 +154,7 @@ st.title("Dashboard")
 # Create tabs
 tab1, tab2, tab3 = st.tabs(["Correlation Matrix", "Return & Volatility","Returns Heatmap"])
 
+# corr matrix tab
 with tab1:
     st.header("Correlation Matrix")
     st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
@@ -149,7 +170,8 @@ with tab1:
             plot_heatmap(correlation_matrix)
         else:
             st.error("No data found for the given symbols. Please check your input.")
-
+            
+# annual return & vol tab
 with tab2:
     st.header("Annual Return & Volatility")
     st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
@@ -174,17 +196,18 @@ with tab2:
         else:
             st.error("No data found for the given symbols. Please check your input.")
 
+# Returns heatmap tab
 with tab3:
     st.header("Returns Heatmap")
     st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
     symbols_input = st.text_input("Stock Symbols", value="", key="symbols_input_tab3")
     symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
 
-    if st.button("Generate Heatmap", key="generate_button_tab3"):
-        data = fetch_returns_data(symbols)
+    if st.button("Generate Returns Heatmap", key="generate_button_tab3"):
+        data = fetch_stock_data(symbols)
         if not data.empty:
             returns_df = calculate_returns(data)
-            st.write("**Returns Heatmap (%):**")
             plot_returns_heatmap(returns_df)
         else:
             st.error("No data found for the given symbols. Please check your input.")
+    
