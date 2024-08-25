@@ -87,13 +87,52 @@ def plot_heatmap(correlation_matrix):
 
     st.pyplot(plt.gcf())
 
+# function to fetch stock data specifically for the returns heatmap
+def fetch_returns_data(symbols):
+    data = {}
+    for symbol in symbols:
+        stock = yf.Ticker(symbol)
+        df = stock.history(period="2y")
+        if 'Adj Close' in df.columns:
+            data[symbol] = df['Adj Close']
+        else:
+            data[symbol] = df['Close']
+    return pd.DataFrame(data)
 
+# Function to calculate returns for different time frames
+def calculate_returns(data):
+    returns = {}
+    time_frames = {
+        '1D': 1,
+        '3D': 3,
+        '1W': 7,
+        '2W': 14,
+        '1M': 30,
+        '3M': 90,
+        '6M': 180,
+        '1Y': 252,
+        '2Y': 504,
+    }
+    
+    for label, days in time_frames.items():
+        returns[label] = data.pct_change(periods=days).iloc[-1] * 100  # Multiply by 100 to get percentage
+    
+    returns_df = pd.DataFrame(returns)
+    returns_df.index.name = 'Symbol'
+    return returns_df
+
+
+# Function to plot the returns heatmap
+def plot_returns_heatmap(returns_df):
+    plt.figure(figsize=(10, 6))
+    sns.heatmap(returns_df, annot=True, cmap='RdYlGn', center=0, fmt=".2f", linewidths=.5)
+    st.pyplot(plt.gcf())
 
 # Streamlit app with tabs
 st.title("Dashboard")
 
 # Create tabs
-tab1, tab2 = st.tabs(["Correlation Matrix", "Return & Volatility"])
+tab1, tab2, tab3 = st.tabs(["Correlation Matrix", "Return & Volatility","Returns Heatmap"])
 
 with tab1:
     st.header("Correlation Matrix")
@@ -132,5 +171,20 @@ with tab2:
                 'Annual Standard Deviation (%)': annual_std_devs
             })
             st.dataframe(metrics_df)
+        else:
+            st.error("No data found for the given symbols. Please check your input.")
+
+with tab3:
+    st.header("Returns Heatmap")
+    st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
+    symbols_input = st.text_input("Stock Symbols", value="", key="symbols_input_tab3")
+    symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
+
+    if st.button("Generate Heatmap", key="generate_button_tab3"):
+        data = fetch_returns_data(symbols)
+        if not data.empty:
+            returns_df = calculate_returns(data)
+            st.write("**Returns Heatmap (%):**")
+            plot_returns_heatmap(returns_df)
         else:
             st.error("No data found for the given symbols. Please check your input.")
