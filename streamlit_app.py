@@ -117,7 +117,7 @@ def calculate_returns(data):
             past_date = target_date
         else:
             # Use the last available trading day before the target date
-            past_date = data.index[data.index.get_loc(target_date, method='bfill')]
+            past_date = data.index[data.index.get_loc(target_date, method='nearest')]
 
         # Ensure we have valid past_date
         if past_date < last_date:
