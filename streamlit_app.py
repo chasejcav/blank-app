@@ -41,19 +41,6 @@ def calculate_metrics(data):
         annual_std_devs[symbol] = round(annual_std_dev, 2)
     return annual_returns, annual_std_devs
 
-# Function to plot performance
-def plot_performance(data, initial_investment=10000):
-    cumulative_returns = (data.pct_change() + 1).cumprod() * initial_investment
-    plt.figure(figsize=(10, 6))
-    for column in cumulative_returns.columns:
-        plt.plot(cumulative_returns.index, cumulative_returns[column], label=column)
-    plt.title("Performance of $10,000 Investment Over 10 Years")
-    plt.xlabel("Date")
-    plt.ylabel("Value ($)")
-    plt.legend()
-    plt.grid(True)
-    st.pyplot(plt.gcf())
-
 
 # Function to plot heatmap with custom color scheme
 def plot_heatmap(correlation_matrix):
@@ -145,6 +132,5 @@ with tab2:
                 'Annual Standard Deviation (%)': annual_std_devs
             })
             st.dataframe(metrics_df)
-            plot_performance(data)
         else:
             st.error("No data found for the given symbols. Please check your input.")
