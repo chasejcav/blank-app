@@ -63,8 +63,8 @@ def plot_interactive_heatmap(correlation_matrix):
     # Update layout to add titles and adjust margins
     fig.update_layout(
         title='Correlation Matrix',
-        xaxis_title="Symbols",
-        yaxis_title="Symbols",
+        xaxis_title="",
+        yaxis_title="",
         xaxis=dict(tickangle=-45),
         yaxis=dict(tickmode="array"),
         autosize=True,
