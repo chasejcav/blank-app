@@ -22,12 +22,14 @@ def fetch_data(symbols):
             data[symbol] = df['Close']
     return pd.DataFrame(data)
 
-# Function to calculate daily returns, correlations, and get start/end dates
-def calculate_daily_returns(data):
+# calculate daily returns, correlations, and get start/end dates
+def calculate_daily_returns(data, days):
     daily_returns = data.pct_change().dropna()
+    if days < len(daily_returns):  # Ensure there is enough data
+        daily_returns = daily_returns.tail(days)
+    correlation_matrix = daily_returns.corr()
     start_date = daily_returns.index.min()
     end_date = daily_returns.index.max()
-    correlation_matrix = daily_returns.corr()
     return correlation_matrix, start_date, end_date
 
 # Function to calculate average annual return and standard deviation
@@ -42,8 +44,7 @@ def calculate_metrics(data):
         annual_std_devs[symbol] = round(annual_std_dev, 2)
     return annual_returns, annual_std_devs
 
-
-#  plot interactive heatmap with Plotly
+# plot interactive heatmap with Plotly
 def plot_interactive_heatmap(correlation_matrix):
     fig = go.Figure(data=go.Heatmap(
         z=correlation_matrix.values,
@@ -60,7 +61,6 @@ def plot_interactive_heatmap(correlation_matrix):
         colorbar=dict(title="Correlation", titleside="right")
     ))
 
-    # Update layout to add titles and adjust margins
     fig.update_layout(
         title='',
         xaxis_title="",
@@ -80,18 +80,24 @@ st.title("Dashboard")
 # Create tabs
 tab1, tab2 = st.tabs(["Correlation Matrix", "Return & Volatility"])
 
-# corr matrix tab
 with tab1:
     st.header("Correlation Matrix")
     st.write("Input stock symbols separated by commas (e.g., SPY, TLT, GLD):")
     symbols_input = st.text_input("Stock Symbols", value="")
     symbols = [symbol.strip().upper() for symbol in symbols_input.split(',')]
 
+    # Add dropdown for selecting time period for correlation calculation
+    days_option = st.selectbox(
+        "Select period for correlation calculation (in days):",
+        options=[5, 10, 21, 63, 126, 252, 504, 756, 1260],
+        index=4  # Default to 252 days
+    )
+
     if st.button("Generate"):
         data = fetch_data(symbols)
         if not data.empty:
-            correlation_matrix, start_date, end_date = calculate_daily_returns(data)
-            st.write("**Correlation Matrix (Based on Historical Daily Returns):**")
+            correlation_matrix, start_date, end_date = calculate_daily_returns(data, days_option)
+            st.write(f"**Correlation Matrix (Based on {days_option}-Day Historical Daily Returns):**")
                      
             plot_interactive_heatmap(correlation_matrix)
         else:
