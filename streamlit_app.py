@@ -43,50 +43,36 @@ def calculate_metrics(data):
     return annual_returns, annual_std_devs
 
 
-# Function to plot heatmap with custom color scheme
-def plot_heatmap(correlation_matrix):
-    num_symbols = len(correlation_matrix.columns)
-    
-    # Define dynamic figure size based on the number of symbols
-    fig_width = max(num_symbols, 5) * 1.5
-    fig_height = max(num_symbols, 5) * 1.2
-    plt.figure(figsize=(fig_width, fig_height))
-    
-    # Create a custom color map from red (negative), yellow (neutral), to green (positive)
-    cmap = LinearSegmentedColormap.from_list(
-        'custom_cmap', ['red', 'yellow', 'green'], N=256)
+#  plot interactive heatmap with Plotly
+def plot_interactive_heatmap(correlation_matrix):
+    fig = go.Figure(data=go.Heatmap(
+        z=correlation_matrix.values,
+        x=correlation_matrix.columns,
+        y=correlation_matrix.index,
+        colorscale=[[0, 'red'], [0.5, 'yellow'], [1, 'green']],
+        zmin=-1,
+        zmax=1,
+        hoverongaps=False,
+        showscale=True,
+        text=correlation_matrix.values,
+        texttemplate="%{text:.2f}",
+        textfont={"size": 12},
+        colorbar=dict(title="Correlation", titleside="right")
+    ))
 
-    ax = sns.heatmap(
-        correlation_matrix, 
-        annot=True, 
-        cmap=cmap, 
-        vmin=-1, 
-        vmax=1,
-        center=0,
-        linewidths=.5,
-        cbar=True,  # Show color bar to indicate scale
-        xticklabels=correlation_matrix.columns,
-        yticklabels=correlation_matrix.columns,
-        annot_kws={"size": max(8, 100 // num_symbols)}  # Adjust text size dynamically
-        
+    # Update layout to add titles and adjust margins
+    fig.update_layout(
+        title='Correlation Matrix',
+        xaxis_title="Symbols",
+        yaxis_title="Symbols",
+        xaxis=dict(tickangle=-45),
+        yaxis=dict(tickmode="array"),
+        autosize=True,
+        margin=dict(l=60, r=60, t=50, b=50),
+        height=600
     )
-    # Create a new axis at the top
-    ax.xaxis.set_visible(False)
-    ax_top = ax.twiny()
-    ax_top.set_xlim(ax.get_xlim())  # Match x-axis limits with the original axis
-    
-    # Set the ticks to be in the center of each cell
-    ax_top.set_xticks([x + 0.5 for x in range(len(correlation_matrix.columns))])
-    ax_top.set_xticklabels(correlation_matrix.columns, rotation=0, ha='center')
 
-    # Set label and tick positions
-    ax_top.xaxis.set_label_position('top')
-    ax_top.xaxis.set_ticks_position('top')
-
-    # Adjust layout for better fitting
-    plt.subplots_adjust(top=0.85, bottom=0.15, right=0.85, left=0.15)  # Adjust margins
-
-    st.pyplot(plt.gcf())
+    st.plotly_chart(fig)
 
 # Streamlit app with tabs
 st.title("Dashboard")
@@ -107,7 +93,7 @@ with tab1:
             correlation_matrix, start_date, end_date = calculate_daily_returns(data)
             st.write("**Correlation Matrix (Based on Historical Daily Returns):**")
                      
-            plot_heatmap(correlation_matrix)
+            plot_interactive_heatmap(correlation_matrix)
         else:
             st.error("No data found for the given symbols. Please check your input.")
             
