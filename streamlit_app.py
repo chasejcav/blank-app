@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 import numpy as np
 import plotly.graph_objects as go
-import requests
+import requests 
 from datetime import timedelta
 
 
