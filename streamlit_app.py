@@ -20,16 +20,22 @@ def fetch_data(symbols):
             data[symbol] = df['Close']
         else:
             data[symbol] = df['Close']
+            return pd.DataFrame()
     return pd.DataFrame(data)
 
 # calculate daily returns, correlations, and get start/end dates
 def calculate_daily_returns(data, days):
+    if len(data) == 0:
+        return pd.DataFrame(), None, None  # return empty dataframe if no data
+
     daily_returns = data.pct_change().dropna()
     if days < len(daily_returns):  # Ensure there is enough data
         daily_returns = daily_returns.tail(days)
+
     correlation_matrix = daily_returns.corr()
     start_date = daily_returns.index.min()
     end_date = daily_returns.index.max()
+
     return correlation_matrix, start_date, end_date
 
 # Function to calculate average annual return and standard deviation
@@ -46,10 +52,15 @@ def calculate_metrics(data):
 
 # plot interactive heatmap with Plotly
 def plot_interactive_heatmap(correlation_matrix):
+    if correlation_matrix.empty:
+        st.error("Correlation matrix is empty. Check your data.")
+        return
     
+    # Check for NaN or infinite values and replace them with 0 or another value
     correlation_matrix = correlation_matrix.replace([np.inf, -np.inf], np.nan)
     correlation_matrix = correlation_matrix.fillna(0)
-    
+
+    # Create the heatmap
     fig = go.Figure(data=go.Heatmap(
         z=correlation_matrix.values,
         x=correlation_matrix.columns,
@@ -97,13 +108,15 @@ with tab1:
         index=4  # Default to 252 days
     )
 
-    if st.button("Generate"):
+ if st.button("Generate"):
         data = fetch_data(symbols)
         if not data.empty:
             correlation_matrix, start_date, end_date = calculate_daily_returns(data, days_option)
-            st.write(f"**Correlation Matrix (Based on {days_option}-Day Historical Daily Returns):**")
-                     
-            plot_interactive_heatmap(correlation_matrix)
+            if not correlation_matrix.empty:
+                st.write(f"**Correlation Matrix (Based on {days_option}-Day Historical Daily Returns):**")
+                plot_interactive_heatmap(correlation_matrix)
+            else:
+                st.error("No correlation matrix generated. Please check the data.")
         else:
             st.error("No data found for the given symbols. Please check your input.")
             
