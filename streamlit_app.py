@@ -73,7 +73,7 @@ def plot_interactive_heatmap(correlation_matrix):
         text=correlation_matrix.values,
         texttemplate="%{text:.2f}",
         textfont={"size": 12},
-        colorbar=dict(title="Correlation", titleside="right")
+        colorbar=dict(title="Correlation", title_side="right")
     ))
 
     fig.update_layout(
