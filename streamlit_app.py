@@ -108,7 +108,7 @@ with tab1:
         index=4  # Default to 252 days
     )
 
- if st.button("Generate"):
+    if st.button("Generate"):
         data = fetch_data(symbols)
         if not data.empty:
             correlation_matrix, start_date, end_date = calculate_daily_returns(data, days_option)
