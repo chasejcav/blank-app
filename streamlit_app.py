@@ -46,6 +46,10 @@ def calculate_metrics(data):
 
 # plot interactive heatmap with Plotly
 def plot_interactive_heatmap(correlation_matrix):
+    
+    correlation_matrix = correlation_matrix.replace([np.inf, -np.inf], np.nan)
+    correlation_matrix = correlation_matrix.fillna(0)
+    
     fig = go.Figure(data=go.Heatmap(
         z=correlation_matrix.values,
         x=correlation_matrix.columns,
