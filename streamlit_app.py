@@ -16,8 +16,8 @@ def fetch_data(symbols):
     for symbol in symbols:
         stock = yf.Ticker(symbol)
         df = stock.history(period="max")
-        if 'Adj Close' in df.columns:
-            data[symbol] = df['Adj Close']
+        if 'Close' in df.columns:
+            data[symbol] = df['Close']
         else:
             data[symbol] = df['Close']
     return pd.DataFrame(data)
